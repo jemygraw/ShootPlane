@@ -5,6 +5,7 @@ public class Config {
     public final static String LOGO_IMG = "images/logo.png";
     public final static String SHOOT_BACKGROUND_IMG = "images/shoot_background.png";
     public final static String SHOOT_IMG = "images/shoot.png";
+    public final static String FONT_IMG="images/font.png";
 
     public final static String ACHIEVEMENT_AUDIO = "sound/achievement.wav";
 
@@ -39,18 +40,29 @@ public class Config {
     public final static int BIG_PLANE_STATUS_CHANGE_INTERVAL = 200;
     public final static int BOSS_PLANE_STATUS_CHANGE_INTERVAL = 200;
 
+    public final static int NUMBER_0 = 0;
+    public final static int NUMBER_1 = 1;
+    public final static int NUMBER_2 = 2;
+    public final static int NUMBER_3 = 3;
+    public final static int NUMBER_4 = 4;
+    public final static int NUMBER_5 = 5;
+    public final static int NUMBER_6 = 6;
+    public final static int NUMBER_7 = 7;
+    public final static int NUMBER_8 = 8;
+    public final static int NUMBER_9 = 9;
+
     // changeable configuration
     public static int DOUBLE_LASER_LAST_TIME = 30000;// 30 seconds
 
     public static int BULLET_FIRE_INTERVAL = 120;
 
-    public static int MAIN_FRAME_REPAINT_INTERVAL = 90;
+    public static int MAIN_FRAME_REPAINT_INTERVAL = 80;
 
     public static int YELLOW_BULLET_MOVE_SPEED = 50;
     public static int BLUE_BULLET_MOVE_SPEED = 50;
 
-    public static int ENEMY_PLANE_MOVE_SPEED_MIN = 20;
-    public static int ENEMY_PLANE_MOVE_SPEED_MAX = 30;
+    public static int ENEMY_PLANE_MOVE_SPEED_MIN = 50;
+    public static int ENEMY_PLANE_MOVE_SPEED_MAX = 60;
 
     public static int POP_WEAPON_MOV_FORWARD_SPEED = 60;
     public static int POP_WEAPON_MOV_BACK_SPEED = 20;

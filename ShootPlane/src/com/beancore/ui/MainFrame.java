@@ -1,10 +1,8 @@
 package com.beancore.ui;
 
-import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -13,7 +11,7 @@ import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 import java.io.IOException;
-import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -187,6 +185,33 @@ public class MainFrame extends JFrame implements MouseMotionListener, BulletList
 		ImageConstants.BOSS_PLANE_ASHED_POS_Y, ImageConstants.BOSS_PLANE_ASHED_WIDTH,
 		ImageConstants.BOSS_PLANE_ASHED_HEIGHT);
 
+	Images.SCORE_IMG = this.imgLoader.getImage(ImageConstants.SCORE_IMG_POS_X, ImageConstants.SCORE_IMG_POS_Y,
+		ImageConstants.SCORE_IMG_WIDTH, ImageConstants.SCORE_IMG_HEIGHT);
+
+	this.imgLoader = new ImageLoader(Config.FONT_IMG);
+	Images.X_MARK_IMG = this.imgLoader.getImage(ImageConstants.X_MARK_POS_X, ImageConstants.X_MARK_POS_Y,
+		ImageConstants.X_MARK_WIDTH, ImageConstants.X_MARK_HEIGHT);
+
+	Images.NUMBER_0_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_0_POS_X, ImageConstants.NUMBER_0_POS_Y,
+		ImageConstants.NUMBER_0_WIDTH, ImageConstants.NUMBER_0_HEIGHT);
+	Images.NUMBER_1_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_1_POS_X, ImageConstants.NUMBER_1_POS_Y,
+		ImageConstants.NUMBER_1_WIDTH, ImageConstants.NUMBER_1_HEIGHT);
+	Images.NUMBER_2_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_2_POS_X, ImageConstants.NUMBER_2_POS_Y,
+		ImageConstants.NUMBER_2_WIDTH, ImageConstants.NUMBER_2_HEIGHT);
+	Images.NUMBER_3_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_3_POS_X, ImageConstants.NUMBER_3_POS_Y,
+		ImageConstants.NUMBER_3_WIDTH, ImageConstants.NUMBER_3_HEIGHT);
+	Images.NUMBER_4_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_4_POS_X, ImageConstants.NUMBER_4_POS_Y,
+		ImageConstants.NUMBER_4_WIDTH, ImageConstants.NUMBER_4_HEIGHT);
+	Images.NUMBER_5_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_5_POS_X, ImageConstants.NUMBER_5_POS_Y,
+		ImageConstants.NUMBER_5_WIDTH, ImageConstants.NUMBER_5_HEIGHT);
+	Images.NUMBER_6_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_6_POS_X, ImageConstants.NUMBER_6_POS_Y,
+		ImageConstants.NUMBER_6_WIDTH, ImageConstants.NUMBER_6_HEIGHT);
+	Images.NUMBER_7_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_7_POS_X, ImageConstants.NUMBER_7_POS_Y,
+		ImageConstants.NUMBER_7_WIDTH, ImageConstants.NUMBER_7_HEIGHT);
+	Images.NUMBER_8_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_8_POS_X, ImageConstants.NUMBER_8_POS_Y,
+		ImageConstants.NUMBER_8_WIDTH, ImageConstants.NUMBER_8_HEIGHT);
+	Images.NUMBER_9_IMG = this.imgLoader.getImage(ImageConstants.NUMBER_9_POS_X, ImageConstants.NUMBER_9_POS_Y,
+		ImageConstants.NUMBER_9_WIDTH, ImageConstants.NUMBER_9_HEIGHT);
     }
 
     private void initSoundPlayer() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
@@ -291,7 +316,7 @@ public class MainFrame extends JFrame implements MouseMotionListener, BulletList
 	this.enemyPlanes = new LinkedList<EnemyPlane>();
 	this.myPlane = new MyPlane(this);
 	this.myPlane.setAlive(true);
-	// this.myPlane.setHitDoubleLaser(true);
+	this.myPlane.setHitDoubleLaser(true);
 	this.myPlane.setPosX((Config.MAIN_FRAME_WIDTH - ImageConstants.MY_PLANE_WIDTH) / 2);
 	this.myPlane.setPosY(Config.MAIN_FRAME_HEIGHT - ImageConstants.MY_PLANE_HEIGHT);
 	this.gameMusicSoundPlayer.loop();
@@ -387,6 +412,7 @@ public class MainFrame extends JFrame implements MouseMotionListener, BulletList
     public void paint(Graphics g) {
 	super.paint(g);
 	if (gameRunning) {
+	    drawScore(g);
 	    myPlane.draw();
 	    for (int i = 0; i < this.enemyPlanes.size(); i++) {
 		EnemyPlane enemyPlane = this.enemyPlanes.get(i);
@@ -397,14 +423,85 @@ public class MainFrame extends JFrame implements MouseMotionListener, BulletList
 		b.draw();
 	    }
 
-	    DecimalFormat df = (DecimalFormat) DecimalFormat.getInstance();
-	    df.setGroupingSize(3);
-	    Graphics2D g2d = (Graphics2D) g;
-	    g2d.setColor(Color.RED);
-	    g2d.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
-	    g2d.drawString("Score：" + df.format(score), 10, 50);
 	}
 
+    }
+
+    private int SCORE_IMG_POS_X = 10;
+    private int SCORE_IMG_POS_Y = 30;
+
+    private void drawScore(Graphics g) {
+	Graphics2D g2d = (Graphics2D) g;
+	List<Integer> intList = new ArrayList<Integer>();
+	int scoreCopy = this.score;
+	int quotient = 0;
+	while ((quotient = scoreCopy / 10) != 0) {
+	    intList.add(scoreCopy % 10);
+	    scoreCopy = quotient;
+	}
+	intList.add(scoreCopy % 10);
+	// draw
+	int posX = this.SCORE_IMG_POS_X;
+	int posY = this.SCORE_IMG_POS_Y;
+	g2d.drawImage(Images.SCORE_IMG, posX, posY, ImageConstants.SCORE_IMG_WIDTH, ImageConstants.SCORE_IMG_HEIGHT,
+		this);
+	posX += ImageConstants.SCORE_IMG_WIDTH;
+	posY += ImageConstants.SCORE_IMG_HEIGHT - ImageConstants.NUMBER_0_HEIGHT;
+	int size = intList.size();
+	for (int i = size - 1; i >= 0; i--) {
+	    switch (intList.get(i)) {
+	    case Config.NUMBER_0:
+		g2d.drawImage(Images.NUMBER_0_IMG, posX, posY, ImageConstants.NUMBER_0_WIDTH,
+			ImageConstants.NUMBER_0_HEIGHT, this);
+		posX += ImageConstants.NUMBER_0_WIDTH;
+		break;
+	    case Config.NUMBER_1:
+		g2d.drawImage(Images.NUMBER_1_IMG, posX, posY, ImageConstants.NUMBER_1_WIDTH,
+			ImageConstants.NUMBER_1_HEIGHT, this);
+		posX += ImageConstants.NUMBER_1_WIDTH;
+		break;
+	    case Config.NUMBER_2:
+		g2d.drawImage(Images.NUMBER_2_IMG, posX, posY, ImageConstants.NUMBER_2_WIDTH,
+			ImageConstants.NUMBER_2_HEIGHT, this);
+		posX += ImageConstants.NUMBER_2_WIDTH;
+		break;
+	    case Config.NUMBER_3:
+		g2d.drawImage(Images.NUMBER_3_IMG, posX, posY, ImageConstants.NUMBER_3_WIDTH,
+			ImageConstants.NUMBER_3_HEIGHT, this);
+		posX += ImageConstants.NUMBER_3_WIDTH;
+		break;
+	    case Config.NUMBER_4:
+		g2d.drawImage(Images.NUMBER_4_IMG, posX, posY, ImageConstants.NUMBER_4_WIDTH,
+			ImageConstants.NUMBER_4_HEIGHT, this);
+		posX += ImageConstants.NUMBER_4_WIDTH;
+		break;
+	    case Config.NUMBER_5:
+		g2d.drawImage(Images.NUMBER_5_IMG, posX, posY, ImageConstants.NUMBER_5_WIDTH,
+			ImageConstants.NUMBER_5_HEIGHT, this);
+		posX += ImageConstants.NUMBER_5_WIDTH;
+		break;
+	    case Config.NUMBER_6:
+		g2d.drawImage(Images.NUMBER_6_IMG, posX, posY, ImageConstants.NUMBER_6_WIDTH,
+			ImageConstants.NUMBER_6_HEIGHT, this);
+		posX += ImageConstants.NUMBER_6_WIDTH;
+		break;
+	    case Config.NUMBER_7:
+		g2d.drawImage(Images.NUMBER_7_IMG, posX, posY, ImageConstants.NUMBER_7_WIDTH,
+			ImageConstants.NUMBER_7_HEIGHT, this);
+		posX += ImageConstants.NUMBER_7_WIDTH;
+		break;
+	    case Config.NUMBER_8:
+		g2d.drawImage(Images.NUMBER_8_IMG, posX, posY, ImageConstants.NUMBER_8_WIDTH,
+			ImageConstants.NUMBER_8_HEIGHT, this);
+		posX += ImageConstants.NUMBER_8_WIDTH;
+		break;
+	    case Config.NUMBER_9:
+		g2d.drawImage(Images.NUMBER_9_IMG, posX, posY, ImageConstants.NUMBER_9_WIDTH,
+			ImageConstants.NUMBER_9_HEIGHT, this);
+		posX += ImageConstants.NUMBER_9_WIDTH;
+		break;
+	    }
+	}
     }
 
     class PaintThread implements Runnable {

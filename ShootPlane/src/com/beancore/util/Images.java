@@ -32,4 +32,19 @@ public class Images {
     public static Image BOSS_PLANE_BADDLY_WOUNDED_IMG;
     public static Image BOSS_PLANE_KILLED_IMG;
     public static Image BOSS_PLANE_ASHED_IMG;
+
+    public static Image SCORE_IMG;
+
+    public static Image X_MARK_IMG;
+
+    public static Image NUMBER_0_IMG;
+    public static Image NUMBER_1_IMG;
+    public static Image NUMBER_2_IMG;
+    public static Image NUMBER_3_IMG;
+    public static Image NUMBER_4_IMG;
+    public static Image NUMBER_5_IMG;
+    public static Image NUMBER_6_IMG;
+    public static Image NUMBER_7_IMG;
+    public static Image NUMBER_8_IMG;
+    public static Image NUMBER_9_IMG;
 }

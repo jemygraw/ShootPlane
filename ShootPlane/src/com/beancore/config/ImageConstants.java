@@ -131,4 +131,64 @@ public class ImageConstants {
     public final static int BOSS_PLANE_ASHED_WIDTH = 156;
     public final static int BOSS_PLANE_ASHED_HEIGHT = 220;
 
+    public final static int SCORE_IMG_POS_X = 271;
+    public final static int SCORE_IMG_POS_Y = 248;
+    public final static int SCORE_IMG_WIDTH = 50;
+    public final static int SCORE_IMG_HEIGHT = 50;
+
+    public final static int NUMBER_0_POS_X = 179;
+    public final static int NUMBER_0_POS_Y = 0;
+    public final static int NUMBER_0_WIDTH = 26;
+    public final static int NUMBER_0_HEIGHT = 38;
+
+    public final static int NUMBER_1_POS_X = 272;
+    public final static int NUMBER_1_POS_Y = 0;
+    public final static int NUMBER_1_WIDTH = 5;
+    public final static int NUMBER_1_HEIGHT = 38;
+
+    public final static int NUMBER_2_POS_X = 150;
+    public final static int NUMBER_2_POS_Y = 0;
+    public final static int NUMBER_2_WIDTH = 28;
+    public final static int NUMBER_2_HEIGHT = 38;
+
+    public final static int NUMBER_3_POS_X = 30;
+    public final static int NUMBER_3_POS_Y = 0;
+    public final static int NUMBER_3_WIDTH = 25;
+    public final static int NUMBER_3_HEIGHT = 38;
+
+    public final static int NUMBER_4_POS_X = 0;
+    public final static int NUMBER_4_POS_Y = 0;
+    public final static int NUMBER_4_WIDTH = 28;
+    public final static int NUMBER_4_HEIGHT = 38;
+
+    public final static int NUMBER_5_POS_X = 236;
+    public final static int NUMBER_5_POS_Y = 0;
+    public final static int NUMBER_5_WIDTH = 34;
+    public final static int NUMBER_5_HEIGHT = 38;
+
+    public final static int NUMBER_6_POS_X = 206;
+    public final static int NUMBER_6_POS_Y = 0;
+    public final static int NUMBER_6_WIDTH = 30;
+    public final static int NUMBER_6_HEIGHT = 38;
+
+    public final static int NUMBER_7_POS_X = 278;
+    public final static int NUMBER_7_POS_Y = 0;
+    public final static int NUMBER_7_WIDTH = 32;
+    public final static int NUMBER_7_HEIGHT = 38;
+
+    public final static int NUMBER_8_POS_X = 87;
+    public final static int NUMBER_8_POS_Y = 0;
+    public final static int NUMBER_8_WIDTH = 30;
+    public final static int NUMBER_8_HEIGHT = 38;
+
+    public final static int NUMBER_9_POS_X = 120;
+    public final static int NUMBER_9_POS_Y = 0;
+    public final static int NUMBER_9_WIDTH = 28;
+    public final static int NUMBER_9_HEIGHT = 38;
+
+    public final static int X_MARK_POS_X = 58;
+    public final static int X_MARK_POS_Y = 0;
+    public final static int X_MARK_WIDTH = 28;
+    public final static int X_MARK_HEIGHT = 38;
+
 }
