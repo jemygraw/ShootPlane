@@ -1,5 +1,6 @@
 package com.beancore.entity;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -10,7 +11,7 @@ import com.beancore.config.BulletType;
 import com.beancore.config.Config;
 import com.beancore.config.ImageConstants;
 import com.beancore.factory.BulletFactory;
-import com.beancore.ui.MainFrame;
+import com.beancore.ui.GamePlayingPanel;
 import com.beancore.util.Images;
 
 public class MyPlane {
@@ -27,11 +28,11 @@ public class MyPlane {
     private boolean hitDoubleLaser;
     private List<Bomb> holdBombList;
     private BulletType bulletType;
-    private MainFrame mainFrame;
+    private GamePlayingPanel playingPanel;
 
-    public MyPlane(MainFrame mainFrame) {
+    public MyPlane(GamePlayingPanel playingPanel) {
 	this.isAlive = true;
-	this.mainFrame = mainFrame;
+	this.playingPanel = playingPanel;
 	this.width = ImageConstants.MY_PLANE_WIDTH;
 	this.height = ImageConstants.MY_PLANE_HEIGHT;
 	this.planeImage = Images.MY_PLANE_IMG;
@@ -43,9 +44,9 @@ public class MyPlane {
 	return new Rectangle(posX + fix, posY, width / 3, height);
     }
 
-    public void draw() {
-	Graphics2D g2d = (Graphics2D) mainFrame.getGraphics();
-	g2d.drawImage(planeImage, posX, posY, width, height, mainFrame);
+    public void draw(Graphics g) {
+	Graphics2D g2d = (Graphics2D) g;
+	g2d.drawImage(planeImage, posX, posY, width, height, playingPanel);
     }
 
     public void mouseMoved(MouseEvent e) {
@@ -62,20 +63,24 @@ public class MyPlane {
 	    if (hitDoubleLaser) {
 		Bullet bullets[] = BulletFactory.createBlueBullet(this);
 		for (Bullet bullet : bullets) {
-		    bullet.addBulletListener(this.mainFrame);
-		    this.mainFrame.getBullets().add(bullet);
+		    bullet.addBulletListener(this.playingPanel);
+		    synchronized (this.playingPanel.getBullets()) {
+			this.playingPanel.getBullets().add(bullet);
+		    }
 		}
 	    } else {
 		Bullet bullet = BulletFactory.createYellowBullet(this);
-		bullet.addBulletListener(this.mainFrame);
-		this.mainFrame.getBullets().add(bullet);
+		bullet.addBulletListener(this.playingPanel);
+		synchronized (this.playingPanel.getBullets()) {
+		    this.playingPanel.getBullets().add(bullet);
+		}
 	    }
 	}
     }
 
     class LauchBulletThread implements Runnable {
 	public void run() {
-	    while (true) {
+	    while (isAlive) {
 		try {
 		    Thread.sleep(Config.BULLET_FIRE_INTERVAL);
 		} catch (InterruptedException e) {
@@ -126,6 +131,14 @@ public class MyPlane {
 	this.height = height;
     }
 
+    public Image getPlaneImage() {
+	return planeImage;
+    }
+
+    public void setPlaneImage(Image planeImage) {
+	this.planeImage = planeImage;
+    }
+
     public boolean isAlive() {
 	return isAlive;
     }
@@ -158,12 +171,12 @@ public class MyPlane {
 	this.bulletType = bulletType;
     }
 
-    public MainFrame getMainFrame() {
-	return mainFrame;
+    public GamePlayingPanel getPlayingPanel() {
+	return playingPanel;
     }
 
-    public void setMainFrame(MainFrame mainFrame) {
-	this.mainFrame = mainFrame;
+    public void setPlayingPanel(GamePlayingPanel playingPanel) {
+	this.playingPanel = playingPanel;
     }
 
 }

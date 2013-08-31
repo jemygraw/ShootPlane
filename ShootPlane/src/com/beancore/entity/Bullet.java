@@ -1,5 +1,6 @@
 package com.beancore.entity;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -9,7 +10,7 @@ import com.beancore.config.BulletType;
 import com.beancore.config.Config;
 import com.beancore.config.ImageConstants;
 import com.beancore.listener.BulletListener;
-import com.beancore.ui.MainFrame;
+import com.beancore.ui.GamePlayingPanel;
 import com.beancore.util.Images;
 
 public class Bullet {
@@ -20,12 +21,12 @@ public class Bullet {
     private int speed;
     private BulletType bulletType;
 
-    private MainFrame mainFrame;
+    private GamePlayingPanel gamePlayingPanel;
     private BulletListener listener;
     private Image bulletImage;
 
-    public Bullet(MainFrame mainFrame, BulletType bulletType) {
-	this.mainFrame = mainFrame;
+    public Bullet(GamePlayingPanel gamePlayingPanel, BulletType bulletType) {
+	this.gamePlayingPanel = gamePlayingPanel;
 	this.bulletType = bulletType;
 	switch (this.bulletType) {
 	case YELLOW_BULLET:
@@ -41,6 +42,32 @@ public class Bullet {
 	    speed = Config.BLUE_BULLET_MOVE_SPEED;
 	    break;
 	}
+    }
+
+    public Rectangle getRectangle() {
+	return new Rectangle(posX, posY, width, height);
+    }
+
+    public void draw(Graphics g) {
+	Graphics2D g2d = (Graphics2D) g;
+	g2d.drawImage(bulletImage, posX, posY, width, height, gamePlayingPanel);
+
+    }
+
+    public EnemyPlane hitEnemyPlanes() {
+	List<EnemyPlane> enmeyPlanes = this.gamePlayingPanel.getEnemyPlanes();
+	for (int i = 0; i < enmeyPlanes.size(); i++) {
+	    EnemyPlane enemyPlane = enmeyPlanes.get(i);
+	    if (this.getRectangle().intersects(enemyPlane.getRectangle())) {
+		enemyPlane.addHittedCount();
+		return enemyPlane;
+	    }
+	}
+	return null;
+    }
+
+    public void addBulletListener(GamePlayingPanel gamePlayingPanel) {
+	this.gamePlayingPanel = gamePlayingPanel;
     }
 
     public int getPosX() {
@@ -83,12 +110,12 @@ public class Bullet {
 	this.bulletType = bulletType;
     }
 
-    public MainFrame getMainFrame() {
-	return mainFrame;
+    public GamePlayingPanel getGamePlayingPanel() {
+	return gamePlayingPanel;
     }
 
-    public void setMainFrame(MainFrame mainFrame) {
-	this.mainFrame = mainFrame;
+    public void setGamePlayingPanel(GamePlayingPanel gamePlayingPanel) {
+	this.gamePlayingPanel = gamePlayingPanel;
     }
 
     public BulletListener getListener() {
@@ -113,34 +140,6 @@ public class Bullet {
 
     public void setSpeed(int speed) {
 	this.speed = speed;
-    }
-
-    public Rectangle getRectangle() {
-
-	return new Rectangle(posX, posY, width, height);
-
-    }
-
-    public void draw() {
-	Graphics2D g2d = (Graphics2D) mainFrame.getGraphics();
-	g2d.drawImage(bulletImage, posX, posY, width, height, mainFrame);
-
-    }
-
-    public EnemyPlane hitEnemyPlanes() {
-	List<EnemyPlane> enmeyPlanes = this.mainFrame.getEnemyPlanes();
-	for (int i = 0; i < enmeyPlanes.size(); i++) {
-	    EnemyPlane enemyPlane = enmeyPlanes.get(i);
-	    if (this.getRectangle().intersects(enemyPlane.getRectangle())) {
-		enemyPlane.addHittedCount();
-		return enemyPlane;
-	    }
-	}
-	return null;
-    }
-
-    public void addBulletListener(MainFrame mainFrame) {
-	this.mainFrame = mainFrame;
     }
 
 }

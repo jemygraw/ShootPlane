@@ -143,7 +143,7 @@ public class ImageConstants {
 
     public final static int NUMBER_1_POS_X = 272;
     public final static int NUMBER_1_POS_Y = 0;
-    public final static int NUMBER_1_WIDTH = 5;
+    public final static int NUMBER_1_WIDTH = 6;
     public final static int NUMBER_1_HEIGHT = 38;
 
     public final static int NUMBER_2_POS_X = 150;

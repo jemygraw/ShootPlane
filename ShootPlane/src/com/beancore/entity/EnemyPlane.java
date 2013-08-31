@@ -1,12 +1,13 @@
 package com.beancore.entity;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 
 import com.beancore.config.EnemyPlaneType;
 import com.beancore.listener.EnemyPlaneListener;
-import com.beancore.ui.MainFrame;
+import com.beancore.ui.GamePlayingPanel;
 
 public abstract class EnemyPlane {
     private int posX;
@@ -20,10 +21,10 @@ public abstract class EnemyPlane {
     private Image planeImage;
     private EnemyPlaneListener listener;
     private EnemyPlaneType enemyType;
-    private MainFrame mainFrame;
+    private GamePlayingPanel gamePlayingPanel;
 
-    public EnemyPlane(MainFrame mainFrame, EnemyPlaneType enemyType) {
-	this.mainFrame = mainFrame;
+    public EnemyPlane(GamePlayingPanel getPlayingPanel, EnemyPlaneType enemyType) {
+	this.gamePlayingPanel = getPlayingPanel;
 	this.enemyType = enemyType;
 	this.hittedCount = 0;
     }
@@ -32,9 +33,9 @@ public abstract class EnemyPlane {
 	return new Rectangle(posX, posY, width, height);
     }
 
-    public void draw() {
-	Graphics2D g2d = (Graphics2D) mainFrame.getGraphics();
-	g2d.drawImage(planeImage, posX, posY, width, height, mainFrame);
+    public void draw(Graphics g) {
+	Graphics2D g2d = (Graphics2D) g;
+	g2d.drawImage(planeImage, posX, posY, width, height, gamePlayingPanel);
     }
 
     public void addEnemyPlaneListener(EnemyPlaneListener listener) {
@@ -49,9 +50,9 @@ public abstract class EnemyPlane {
 	return this.hittedCount >= this.killedCount;
     }
 
-    public abstract void drawFighting();
+    public abstract void drawFighting(Graphics g);
 
-    public abstract void drawKilled();
+    public abstract void drawKilled(Graphics g);
 
     public EnemyPlaneType getEnemyType() {
 	return enemyType;
@@ -61,12 +62,12 @@ public abstract class EnemyPlane {
 	this.enemyType = enemyType;
     }
 
-    public MainFrame getMainFrame() {
-	return mainFrame;
+    public GamePlayingPanel getGamePlayingPanel() {
+	return gamePlayingPanel;
     }
 
-    public void setMainFrame(MainFrame mainFrame) {
-	this.mainFrame = mainFrame;
+    public void setGamePlayingPanel(GamePlayingPanel gamePlayingPanel) {
+	this.gamePlayingPanel = gamePlayingPanel;
     }
 
     public int getPosX() {

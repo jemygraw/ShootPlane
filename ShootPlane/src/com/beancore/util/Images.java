@@ -3,6 +3,12 @@ package com.beancore.util;
 import java.awt.Image;
 
 public class Images {
+    public static Image GAME_LOADING_IMG1;
+    public static Image GAME_LOADING_IMG2;
+    public static Image GAME_LOADING_IMG3;
+    
+    public static Image GAME_LOADING_TEXT_IMG;
+
     public static Image SHOOT_BACKGROUND_IMG;
 
     public static Image MY_PLANE_IMG;

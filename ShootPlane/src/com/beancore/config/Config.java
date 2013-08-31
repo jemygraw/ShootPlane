@@ -5,7 +5,7 @@ public class Config {
     public final static String LOGO_IMG = "images/logo.png";
     public final static String SHOOT_BACKGROUND_IMG = "images/shoot_background.png";
     public final static String SHOOT_IMG = "images/shoot.png";
-    public final static String FONT_IMG="images/font.png";
+    public final static String FONT_IMG = "images/font.png";
 
     public final static String ACHIEVEMENT_AUDIO = "sound/achievement.wav";
 
@@ -39,6 +39,8 @@ public class Config {
     public final static int SMALL_PLANE_STATUS_CHANGE_INTERVAL = 200;
     public final static int BIG_PLANE_STATUS_CHANGE_INTERVAL = 200;
     public final static int BOSS_PLANE_STATUS_CHANGE_INTERVAL = 200;
+
+    public final static int GAME_LOADING_INTERVAL = 600;
 
     public final static int NUMBER_0 = 0;
     public final static int NUMBER_1 = 1;
