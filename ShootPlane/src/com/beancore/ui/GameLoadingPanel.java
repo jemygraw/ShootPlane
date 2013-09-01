@@ -16,17 +16,17 @@ public class GameLoadingPanel extends JPanel {
     private Image gameLoadingTextImg;
     private JLabel gameLoadingPlaneLabel;
     private JLabel gameLoadingTextLabel;
-    private Image[] gameLoadingPlaneImgList;
+    private ImageIcon[] gameLoadingPlaneImgList;
 
     public GameLoadingPanel() {
 	this.createLoadingPanel();
     }
 
     private void createLoadingPanel() {
-	this.gameLoadingPlaneImgList = new Image[3];
-	this.gameLoadingPlaneImgList[0] = Images.GAME_LOADING_IMG1;
-	this.gameLoadingPlaneImgList[1] = Images.GAME_LOADING_IMG2;
-	this.gameLoadingPlaneImgList[2] = Images.GAME_LOADING_IMG3;
+	this.gameLoadingPlaneImgList = new ImageIcon[3];
+	this.gameLoadingPlaneImgList[0] = new ImageIcon(Images.GAME_LOADING_IMG1);
+	this.gameLoadingPlaneImgList[1] = new ImageIcon(Images.GAME_LOADING_IMG2);
+	this.gameLoadingPlaneImgList[2] = new ImageIcon(Images.GAME_LOADING_IMG3);
 	this.gameLoadingTextImg = Images.GAME_LOADING_TEXT_IMG;
 
 	gameLoadingPlaneLabel = new JLabel();
@@ -56,7 +56,7 @@ public class GameLoadingPanel extends JPanel {
     public void loadingGame() {
 	int times = 3;
 	for (int i = 0; i < times; i++) {
-	    this.gameLoadingPlaneLabel.setIcon(new ImageIcon(this.gameLoadingPlaneImgList[i]));
+	    this.gameLoadingPlaneLabel.setIcon(this.gameLoadingPlaneImgList[i]);
 	    try {
 		Thread.sleep(Config.GAME_LOADING_INTERVAL);
 	    } catch (Exception e) {

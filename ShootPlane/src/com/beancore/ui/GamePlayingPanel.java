@@ -321,6 +321,7 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 	this.enemyPlanes = new LinkedList<EnemyPlane>();
 	this.myPlane = new MyPlane(this);
 	this.myPlane.setAlive(true);
+	this.myPlane.setHitDoubleLaser(true);
 	this.myPlane.setPosX((Config.MAIN_FRAME_WIDTH - ImageConstants.MY_PLANE_WIDTH) / 2);
 	this.myPlane.setPosY(Config.MAIN_FRAME_HEIGHT - ImageConstants.MY_PLANE_HEIGHT);
 	this.gameMusicSoundPlayer.loop();

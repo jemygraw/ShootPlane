@@ -5,6 +5,8 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.IOException;
 
 import javax.sound.sampled.LineUnavailableException;
@@ -22,13 +24,15 @@ import com.beancore.config.ImageConstants;
 import com.beancore.util.ImageLoader;
 import com.beancore.util.Images;
 
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements ActionListener {
 
     private static final long serialVersionUID = 1L;
     private ImageLoader imgLoader;
 
     private GameLoadingPanel gameLoadingPanel;
     private GamePlayingPanel gamePlayingPanel;
+
+    private PopupMenuPanel popupMenuPanel;
 
     public MainFrame() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
 	this.loadImage();
@@ -68,6 +72,8 @@ public class MainFrame extends JFrame {
 		ImageConstants.BLUE_BULLET_POS_Y, ImageConstants.BLUE_BULLET_WIDTH, ImageConstants.BLUE_BULLET_HEIGHT);
 	Images.MY_PLANE_IMG = this.imgLoader.getImage(ImageConstants.MY_PLANE_POS_X, ImageConstants.MY_PLANE_POS_Y,
 		ImageConstants.MY_PLANE_WIDTH, ImageConstants.MY_PLANE_HEIGHT);
+	Images.MY_PLANE_FLYING_IMG = this.imgLoader.getImage(ImageConstants.MY_PLANE_FLYING_POS_X, ImageConstants.MY_PLANE_FLYING_POS_Y,
+		ImageConstants.MY_PLANE_FLYING_WIDTH, ImageConstants.MY_PLANE_FLYING_HEIGHT);
 	Images.SMALL_PLANE_IMG = this.imgLoader.getImage(ImageConstants.SMALL_PLANE_POS_X,
 		ImageConstants.SMALL_PLANE_POS_Y, ImageConstants.SMALL_PLANE_WIDTH, ImageConstants.SMALL_PLANE_HEIGHT);
 	Images.BIG_PLANE_IMG = this.imgLoader.getImage(ImageConstants.BIG_PLANE_POS_X, ImageConstants.BIG_PLANE_POS_Y,
@@ -168,6 +174,21 @@ public class MainFrame extends JFrame {
 	((JPanel) this.getContentPane()).setOpaque(false);
     }
 
+    private void popupMenuPanel() {
+	Container c = this.getContentPane();
+	c.removeAll();
+	this.repaint();
+	if (this.popupMenuPanel == null) {
+	    this.popupMenuPanel = new PopupMenuPanel(this);
+	}
+	BoxLayout boxLayout = new BoxLayout(c, BoxLayout.Y_AXIS);
+	c.setLayout(boxLayout);
+	c.add(Box.createVerticalGlue());
+	c.add(this.popupMenuPanel);
+	c.add(Box.createVerticalGlue());
+	this.validate();
+    }
+
     public void loadGame() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
 	Container c = this.getContentPane();
 	c.removeAll();
@@ -178,29 +199,22 @@ public class MainFrame extends JFrame {
 
 	BoxLayout boxLayout = new BoxLayout(c, BoxLayout.Y_AXIS);
 	c.setLayout(boxLayout);
-
 	c.add(Box.createVerticalGlue());
 	c.add(this.gameLoadingPanel);
 	c.add(Box.createVerticalGlue());
 	this.gameLoadingPanel.loadingGame();
-	this.repaint();
 
 	this.startGame();
     }
 
-    @Override
-    public void paint(Graphics g) {
-	super.paint(g);
-    }
-
-    public void startGame() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
+    private void startGame() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
 	Container c = this.getContentPane();
 	c.removeAll();
+	this.repaint();
 	BorderLayout borderLayout = new BorderLayout();
 	c.setLayout(borderLayout);
 	this.gamePlayingPanel = new GamePlayingPanel();
 	c.add(this.gamePlayingPanel, BorderLayout.CENTER);
-	this.repaint();
 	this.gamePlayingPanel.startGame();
 	while (this.gamePlayingPanel.getMyPlane().isAlive()) {
 	    try {
@@ -212,7 +226,7 @@ public class MainFrame extends JFrame {
 	int option = JOptionPane.showConfirmDialog(this, "Game Over, Score:" + this.gamePlayingPanel.getScore()
 		+ ", Start Again?", "Game Over", JOptionPane.YES_NO_OPTION);
 	switch (option) {
-	case JOptionPane.OK_OPTION:
+	case JOptionPane.YES_OPTION:
 	    loadGame();
 	    break;
 	case JOptionPane.NO_OPTION:
@@ -222,9 +236,49 @@ public class MainFrame extends JFrame {
     }
 
     public void stopGame() {
-	Container c = this.getContentPane();
-	c.removeAll();
-	this.repaint();
+	popupMenuPanel();
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+	String actionCmd = e.getActionCommand();
+	if (actionCmd.equals(PopupMenuPanel.START_GAME_BUTTON)) {
+	    startGameAction();
+	} else if (actionCmd.equals(PopupMenuPanel.EXIT_GAME_BUTTON)) {
+	    exitGameAction();
+	} else if (actionCmd.equals(PopupMenuPanel.SET_PARAM_BUTTON)) {
+	    setParamAction();
+	} else if (actionCmd.equals(PopupMenuPanel.HELP_BUTTON)) {
+	    helpAction();
+	}
+    }
+
+    private void startGameAction() {
+	new Thread(new StartGameActionClass()).start();
+    }
+
+    class StartGameActionClass implements Runnable {
+
+	@Override
+	public void run() {
+	    try {
+		loadGame();
+	    } catch (Exception e) {
+		e.printStackTrace();
+	    }
+	}
+
+    }
+
+    private void exitGameAction() {
+	System.exit(0);
+    }
+
+    private void setParamAction() {
+	// set param
+    }
+
+    private void helpAction() {
+	// popup help text
+    }
 }

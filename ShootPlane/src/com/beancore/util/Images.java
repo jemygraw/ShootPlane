@@ -6,12 +6,13 @@ public class Images {
     public static Image GAME_LOADING_IMG1;
     public static Image GAME_LOADING_IMG2;
     public static Image GAME_LOADING_IMG3;
-    
+
     public static Image GAME_LOADING_TEXT_IMG;
 
     public static Image SHOOT_BACKGROUND_IMG;
 
     public static Image MY_PLANE_IMG;
+    public static Image MY_PLANE_FLYING_IMG;
 
     public static Image YELLOW_BULLET_IMG;
     public static Image BLUE_BULLET_IMG;

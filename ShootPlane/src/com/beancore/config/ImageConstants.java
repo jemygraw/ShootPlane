@@ -41,6 +41,11 @@ public class ImageConstants {
     public final static int MY_PLANE_WIDTH = 100;
     public final static int MY_PLANE_HEIGHT = 124;
 
+    public final static int MY_PLANE_FLYING_POS_X = 168;
+    public final static int MY_PLANE_FLYING_POS_Y = 362;
+    public final static int MY_PLANE_FLYING_WIDTH = 96;
+    public final static int MY_PLANE_FLYING_HEIGHT = 112;
+
     public final static int SMALL_PLANE_POS_X = 539;
     public final static int SMALL_PLANE_POS_Y = 617;
     public final static int SMALL_PLANE_WIDTH = 50;

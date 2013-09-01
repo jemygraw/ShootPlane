@@ -6,6 +6,8 @@ public class Config {
     public final static String SHOOT_BACKGROUND_IMG = "images/shoot_background.png";
     public final static String SHOOT_IMG = "images/shoot.png";
     public final static String FONT_IMG = "images/font.png";
+    public final static String BUTTON_BG_IMG = "images/button_bg.png";
+    public final static String BUTTON_HOVER_BG_IMG = "images/button_hover_bg.png";
 
     public final static String ACHIEVEMENT_AUDIO = "sound/achievement.wav";
 
@@ -25,8 +27,13 @@ public class Config {
     public final static String GET_BOMB_AUDIO = "sound/get_bomb.wav";
     public final static String GET_DOUBLE_LASER_AUDIO = "sound/get_double_laser.wav";
 
+    public final static String BUTTON_ACTION_AUDIO = "sound/button.wav";
+
     public final static int MAIN_FRAME_WIDTH = 480;
     public final static int MAIN_FRAME_HEIGHT = 852;
+
+    public final static int POP_UP_MENU_PANEL_WIDTH = 160;
+    public final static int POP_UP_MENU_PANEL_HEIGHT = 265;
 
     public final static int KILL_SMALL_PLANE_SCORE = 1000;
     public final static int KILL_BIG_PLANE_SCORE = 6000;
@@ -34,7 +41,7 @@ public class Config {
 
     public final static int BULLET_COUNT_TO_KILL_SMALL_PLANE = 1;
     public final static int BULLET_COUNT_TO_KILL_BIG_PLANE = 10;
-    public final static int BULLET_COUNT_TO_KILL_BOSS_PLANE = 30;
+    public final static int BULLET_COUNT_TO_KILL_BOSS_PLANE = 20;
 
     public final static int SMALL_PLANE_STATUS_CHANGE_INTERVAL = 200;
     public final static int BIG_PLANE_STATUS_CHANGE_INTERVAL = 200;
@@ -63,8 +70,8 @@ public class Config {
     public static int YELLOW_BULLET_MOVE_SPEED = 50;
     public static int BLUE_BULLET_MOVE_SPEED = 50;
 
-    public static int ENEMY_PLANE_MOVE_SPEED_MIN = 50;
-    public static int ENEMY_PLANE_MOVE_SPEED_MAX = 60;
+    public static int ENEMY_PLANE_MOVE_SPEED_MIN = 30;
+    public static int ENEMY_PLANE_MOVE_SPEED_MAX = 40;
 
     public static int POP_WEAPON_MOV_FORWARD_SPEED = 60;
     public static int POP_WEAPON_MOV_BACK_SPEED = 20;
