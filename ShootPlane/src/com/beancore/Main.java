@@ -9,7 +9,7 @@ public class Main {
 	    mainFrame = new MainFrame();
 	    mainFrame.loadGame();
 	} catch (Exception e) {
-	    System.err.println(e.getMessage());
+	    e.printStackTrace();
 	}
 
     }

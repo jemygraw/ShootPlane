@@ -23,6 +23,7 @@ public class Images {
 
     public static Image BOMB_IMG;
     public static Image DOUBLE_LASER_IMG;
+    public static Image CAUGHT_BOMB_IMG;
 
     public static Image SMALL_PLANE_FIGHTING_IMG;
     public static Image SMALL_PLANE_KILLED_IMG;

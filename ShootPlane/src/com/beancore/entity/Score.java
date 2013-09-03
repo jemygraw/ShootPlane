@@ -1,0 +1,57 @@
+package com.beancore.entity;
+
+import java.io.Serializable;
+import java.util.Date;
+
+public class Score implements Serializable, Comparable<Score> {
+    private static final long serialVersionUID = 1L;
+    private Date scoreDateTime;
+    private int score;
+    private long lastSeconds;
+
+    public Score() {
+	super();
+    }
+
+    public Score(Date scoreDateTime, int score, long lastSeconds) {
+	super();
+	this.scoreDateTime = scoreDateTime;
+	this.score = score;
+	this.lastSeconds = lastSeconds;
+    }
+
+    public Date getScoreDateTime() {
+	return scoreDateTime;
+    }
+
+    public void setScoreDateTime(Date scoreDateTime) {
+	this.scoreDateTime = scoreDateTime;
+    }
+
+    public int getScore() {
+	return score;
+    }
+
+    public void setScore(int score) {
+	this.score = score;
+    }
+
+    public long getLastSeconds() {
+	return lastSeconds;
+    }
+
+    public void setLastSeconds(long lastSeconds) {
+	this.lastSeconds = lastSeconds;
+    }
+
+    @Override
+    public String toString() {
+	return "Score [scoreDateTime=" + scoreDateTime + ", score=" + score + ", lastSeconds=" + lastSeconds + "]";
+    }
+
+    @Override
+    public int compareTo(Score score) {
+	return this.score - score.getScore();
+    }
+
+}

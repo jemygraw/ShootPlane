@@ -3,6 +3,7 @@ package com.beancore.ui;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.image.ImageObserver;
 import java.io.IOException;
@@ -14,36 +15,50 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.JPanel;
 
+import com.beancore.config.CatchableWeaponType;
 import com.beancore.config.Config;
 import com.beancore.config.EnemyPlaneType;
 import com.beancore.config.ImageConstants;
+import com.beancore.entity.Bomb;
 import com.beancore.entity.Bullet;
+import com.beancore.entity.CatchableWeapon;
 import com.beancore.entity.EnemyPlane;
 import com.beancore.entity.MyPlane;
+import com.beancore.factory.CatchableWeaponFactory;
 import com.beancore.factory.EnemyPlaneFactory;
 import com.beancore.listener.BulletListener;
+import com.beancore.listener.CatchableWeaponListener;
 import com.beancore.listener.EnemyPlaneListener;
 import com.beancore.util.Images;
 import com.beancore.util.SoundPlayer;
 
-public class GamePlayingPanel extends JPanel implements MouseMotionListener, BulletListener, EnemyPlaneListener,
-	ImageObserver {
+public class GamePlayingPanel extends JPanel implements MouseListener, MouseMotionListener, BulletListener,
+	EnemyPlaneListener, CatchableWeaponListener, ImageObserver {
     private static final long serialVersionUID = 1L;
+    private static int ANIMATION_STEP_1 = 1;
+    private static int ANIMATION_STEP_2 = 2;
+
     private volatile List<Bullet> bullets;
     private volatile List<EnemyPlane> enemyPlanes;
     private int score;
     private MyPlane myPlane;
 
-    private Thread paintThread;
+    private CatchableWeapon popBomb;
+    private CatchableWeapon popDoubleLaser;
 
-    private int SCORE_IMG_POS_X = 5;
-    private int SCORE_IMG_POS_Y = 5;
+    private Thread paintThread;
 
     private int remainTimeToPopSmallPlane;
     private int remainTimeToPopBigPlane;
     private int remainTimeToPopBossPlane;
 
-    private SoundPlayer achievementSoundPlayer;
+    private int remainTimeToPopBomb;
+    private int remainTimeToPopDoubleLaser;
+
+    private int remainTimeDoubleLaserRunOut;
+
+    private int bombAnomationStep;
+    private int doubleLaserAnimationStep;
 
     private SoundPlayer smallPlaneKilledSoundPlayer;
     private SoundPlayer bigPlaneKilledSoundPlayer;
@@ -68,14 +83,13 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 
     private void initComponents() {
 	this.addMouseMotionListener(this);
+	this.addMouseListener(this);
 	this.setSize(Config.MAIN_FRAME_WIDTH, Config.MAIN_FRAME_HEIGHT);
 	this.setDoubleBuffered(true);
 	this.setOpaque(false);
     }
 
     private void initSoundPlayer() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
-	achievementSoundPlayer = new SoundPlayer(Config.ACHIEVEMENT_AUDIO);
-
 	smallPlaneKilledSoundPlayer = new SoundPlayer(Config.SMALL_PLANE_KILLED_AUDIO);
 	bigPlaneKilledSoundPlayer = new SoundPlayer(Config.BIG_PLANE_KILLED_AUDIO);
 	bossPlaneKilledSoundPlayer = new SoundPlayer(Config.BOSS_PLANE_KILLED_AUDIO);
@@ -136,7 +150,7 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 
     @Override
     public void onEnemyPlaneLocationChanged(EnemyPlane p) {
-	if (p != null) {
+	if (p != null && !p.isKilled()) {
 	    p.setPosY(p.getPosY() + p.getSpeed());
 	    if (p.getPosY() >= this.getHeight()) {
 		if (p.getEnemyType().equals(EnemyPlaneType.BOSS_ENEMY_PLANE)) {
@@ -146,13 +160,82 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 		    enemyPlanes.remove(p);
 		}
 	    } else {
-		if (!p.isKilled() && p.getRectangle().intersects(myPlane.getRectange())) {
+		if (p.getRectangle().intersects(myPlane.getRectange())) {
 		    // game ends
 		    synchronized (myPlane) {
 			if (myPlane.isAlive()) {
 			    this.stopGame();
 			}
 		    }
+		}
+	    }
+	}
+    }
+
+    @Override
+    public void onCatchableWeaponLocationChanged(CatchableWeapon weapon) {
+	if (weapon != null) {
+	    int posY = weapon.getPosY();
+	    if (weapon.isUseAnimation()) {
+		switch (weapon.getWeaponType()) {
+		case BOMB:
+		    if (this.bombAnomationStep == ANIMATION_STEP_1) {
+			posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
+			this.bombAnomationStep++;
+		    } else if (this.bombAnomationStep == ANIMATION_STEP_2) {
+			posY -= Config.POP_WEAPON_ANIMATION_MOV_BACK_SPEED;
+			this.bombAnomationStep = 0;
+			weapon.setUseAnimation(false);
+			weapon.setUseAnimationDone(true);
+		    }
+		    break;
+		case DOUBLE_LASER:
+		    if (this.doubleLaserAnimationStep == ANIMATION_STEP_1) {
+			posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
+			this.doubleLaserAnimationStep++;
+		    } else if (this.doubleLaserAnimationStep == ANIMATION_STEP_2) {
+			posY -= Config.POP_WEAPON_ANIMATION_MOV_BACK_SPEED;
+			this.doubleLaserAnimationStep = 0;
+			weapon.setUseAnimation(false);
+			weapon.setUseAnimationDone(true);
+		    }
+		    break;
+		}
+	    } else {
+		posY += weapon.getSpeed();
+	    }
+
+	    weapon.setPosY(posY);
+
+	    if (!weapon.isUseAnimationDone() && weapon.getPosY() >= this.getHeight() / 2) {
+		weapon.setUseAnimation(true);
+		switch (weapon.getWeaponType()) {
+		case BOMB:
+		    this.bombAnomationStep = ANIMATION_STEP_1;
+		    break;
+		case DOUBLE_LASER:
+		    this.doubleLaserAnimationStep = ANIMATION_STEP_1;
+		    break;
+		}
+	    }
+
+	    if (weapon.getPosY() >= this.getHeight()) {
+		weapon.setWeaponDisappear(true);
+	    } else {
+		if (weapon.getRectangle().intersects(myPlane.getRectange())) {
+		    switch (weapon.getWeaponType()) {
+		    case BOMB:
+			if (myPlane.getHoldBombCount() < Config.BOMB_MAX_HOLD_COUNT) {
+			    myPlane.getHoldBombList().add((Bomb) weapon);
+			    this.getBombSoundPlayer.play();
+			}
+			break;
+		    case DOUBLE_LASER:
+			myPlane.setHitDoubleLaser(true);
+			this.getDoubleLaserSoundPlayer.play();
+			break;
+		    }
+		    weapon.setWeaponDisappear(true);
 		}
 	    }
 	}
@@ -169,8 +252,8 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 	}
 	intList.add(scoreCopy % 10);
 	// draw
-	int posX = this.SCORE_IMG_POS_X;
-	int posY = this.SCORE_IMG_POS_Y;
+	int posX = Config.SCORE_IMG_POS_X;
+	int posY = Config.SCORE_IMG_POS_Y;
 	g2d.drawImage(Images.SCORE_IMG, posX, posY, ImageConstants.SCORE_IMG_WIDTH, ImageConstants.SCORE_IMG_HEIGHT,
 		this);
 	posX += ImageConstants.SCORE_IMG_WIDTH;
@@ -232,6 +315,38 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 	}
     }
 
+    private void drawBomb(Graphics g) {
+	if (this.myPlane.getHoldBombCount() > 0) {
+	    Graphics2D g2d = (Graphics2D) g;
+	    int posX = Config.CAUGHT_BOMB_IMG_POS_X;
+	    int posY = Config.CAUGHT_BOMB_IMG_POS_Y;
+	    g2d.drawImage(Images.CAUGHT_BOMB_IMG, posX, posY, ImageConstants.CAUGHT_BOMB_WIDTH,
+		    ImageConstants.CAUGHT_BOMB_HEIGHT, this);
+
+	    posX += ImageConstants.CAUGHT_BOMB_WIDTH;
+	    posY += (ImageConstants.CAUGHT_BOMB_HEIGHT - ImageConstants.X_MARK_HEIGHT) / 2;
+
+	    g2d.drawImage(Images.X_MARK_IMG, posX, posY, ImageConstants.X_MARK_WIDTH, ImageConstants.X_MARK_HEIGHT,
+		    this);
+	    posX += ImageConstants.X_MARK_WIDTH;
+	    switch (this.myPlane.getHoldBombCount()) {
+	    case Config.ONE_BOMB:
+		g2d.drawImage(Images.NUMBER_1_IMG, posX, posY, ImageConstants.NUMBER_1_WIDTH,
+			ImageConstants.NUMBER_1_HEIGHT, this);
+		break;
+	    case Config.TWO_BOMB:
+		g2d.drawImage(Images.NUMBER_2_IMG, posX, posY, ImageConstants.NUMBER_2_WIDTH,
+			ImageConstants.NUMBER_2_HEIGHT, this);
+		break;
+	    case Config.THREE_BOMB:
+		g2d.drawImage(Images.NUMBER_3_IMG, posX, posY, ImageConstants.NUMBER_3_WIDTH,
+			ImageConstants.NUMBER_3_HEIGHT, this);
+		break;
+	    }
+
+	}
+    }
+
     class PaintThread implements Runnable {
 
 	@Override
@@ -249,7 +364,7 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 
 		// ADD PLANE
 		if (remainTimeToPopSmallPlane > 0) {
-		    remainTimeToPopSmallPlane -= Config.MAIN_FRAME_REPAINT_INTERVAL;
+		    remainTimeToPopSmallPlane -= Config.GAME_PANEL_REPAINT_INTERVAL;
 		} else {
 		    // pop a small enemy plane
 		    EnemyPlane smallPlane = EnemyPlaneFactory.createEnemyPlane(GamePlayingPanel.this,
@@ -261,7 +376,7 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 		}
 
 		if (remainTimeToPopBigPlane > 0) {
-		    remainTimeToPopBigPlane -= Config.MAIN_FRAME_REPAINT_INTERVAL;
+		    remainTimeToPopBigPlane -= Config.GAME_PANEL_REPAINT_INTERVAL;
 		} else {
 		    // pop a big enemy plane
 		    EnemyPlane bigPlane = EnemyPlaneFactory.createEnemyPlane(GamePlayingPanel.this,
@@ -273,7 +388,7 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 		}
 
 		if (remainTimeToPopBossPlane > 0) {
-		    remainTimeToPopBossPlane -= Config.MAIN_FRAME_REPAINT_INTERVAL;
+		    remainTimeToPopBossPlane -= Config.GAME_PANEL_REPAINT_INTERVAL;
 		} else {
 		    // pop a boss enemy plane
 		    EnemyPlane bossPlane = EnemyPlaneFactory.createEnemyPlane(GamePlayingPanel.this,
@@ -285,10 +400,57 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 		    bossPlaneFlyingSoundPlayer.loop();
 		}
 
+		// ADD BOMB
+		if (remainTimeToPopBomb > 0) {
+		    remainTimeToPopBomb -= Config.GAME_PANEL_REPAINT_INTERVAL;
+		} else {
+		    // pop bomb
+		    popBomb = CatchableWeaponFactory.createCatchableWeapon(GamePlayingPanel.this,
+			    CatchableWeaponType.BOMB);
+		    remainTimeToPopBomb = Config.POP_BOMBO_INTERVAL;
+		    popWeaponSoundPlayer.play();
+		}
+
+		if (popBomb != null) {
+		    onCatchableWeaponLocationChanged(popBomb);
+		}
+
+		// ADD DOUBLE LASER
+		if (remainTimeToPopDoubleLaser > 0) {
+		    remainTimeToPopDoubleLaser -= Config.GAME_PANEL_REPAINT_INTERVAL;
+		} else {
+		    // pop double laser
+		    popDoubleLaser = CatchableWeaponFactory.createCatchableWeapon(GamePlayingPanel.this,
+			    CatchableWeaponType.DOUBLE_LASER);
+		    remainTimeToPopDoubleLaser = Config.POP_DOUBLE_LASER_INTERVAL;
+		    popWeaponSoundPlayer.play();
+		}
+
+		if (popDoubleLaser != null) {
+		    onCatchableWeaponLocationChanged(popDoubleLaser);
+		}
+
+		// CHECK DOUBLE LASER BULLETS RUN OUT
+		if (remainTimeDoubleLaserRunOut > 0) {
+		    remainTimeDoubleLaserRunOut -= Config.GAME_PANEL_REPAINT_INTERVAL;
+		} else {
+		    myPlane.setHitDoubleLaser(false);
+		    popDoubleLaser = null;
+		    remainTimeDoubleLaserRunOut = Config.DOUBLE_LASER_LAST_TIME;
+		}
+
+		if (popBomb != null && popBomb.isWeaponDisappear()) {
+		    popBomb = null;
+		}
+
+		if (popDoubleLaser != null && popDoubleLaser.isWeaponDisappear()) {
+		    popDoubleLaser = null;
+		}
+
 		GamePlayingPanel.this.repaint();
 
 		try {
-		    Thread.sleep(Config.MAIN_FRAME_REPAINT_INTERVAL);
+		    Thread.sleep(Config.GAME_PANEL_REPAINT_INTERVAL);
 		} catch (InterruptedException e) {
 
 		}
@@ -301,6 +463,7 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
     protected void paintComponent(Graphics g) {
 	super.paintComponent(g);
 	drawScore(g);
+	drawBomb(g);
 	myPlane.draw(g);
 	for (int i = 0; i < this.enemyPlanes.size(); i++) {
 	    EnemyPlane enemyPlane = this.enemyPlanes.get(i);
@@ -310,18 +473,28 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 	    Bullet b = this.bullets.get(i);
 	    b.draw(g);
 	}
+	if (this.popBomb != null && !this.popBomb.isWeaponDisappear()) {
+	    this.popBomb.draw(g);
+	}
+	if (this.popDoubleLaser != null && !this.popDoubleLaser.isWeaponDisappear()) {
+	    this.popDoubleLaser.draw(g);
+	}
     }
 
     public void startGame() {
 	this.score = 0;
+	this.bombAnomationStep = 0;
+	this.doubleLaserAnimationStep = 0;
 	this.remainTimeToPopSmallPlane = Config.POP_SMALL_ENEMY_PLANE_INTERVAL;
 	this.remainTimeToPopBigPlane = Config.POP_BIG_ENEMY_PLANE_INTERVAL;
 	this.remainTimeToPopBossPlane = Config.POP_BOSS_ENEMY_PLANE_INTERVAL;
+	this.remainTimeToPopBomb = Config.POP_BOMBO_INTERVAL;
+	this.remainTimeToPopDoubleLaser = Config.POP_DOUBLE_LASER_INTERVAL;
+	this.remainTimeDoubleLaserRunOut = Config.DOUBLE_LASER_LAST_TIME;
 	this.bullets = new LinkedList<Bullet>();
 	this.enemyPlanes = new LinkedList<EnemyPlane>();
 	this.myPlane = new MyPlane(this);
 	this.myPlane.setAlive(true);
-	this.myPlane.setHitDoubleLaser(true);
 	this.myPlane.setPosX((Config.MAIN_FRAME_WIDTH - ImageConstants.MY_PLANE_WIDTH) / 2);
 	this.myPlane.setPosY(Config.MAIN_FRAME_HEIGHT - ImageConstants.MY_PLANE_HEIGHT);
 	this.gameMusicSoundPlayer.loop();
@@ -336,6 +509,41 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 	this.fireBulletSoundPlayer.stop();
 	this.bossPlaneFlyingSoundPlayer.stop();
 	this.gameOverSoundPlayer.play();
+    }
+
+    private void useBomb() {
+	if (this.myPlane.getHoldBombCount() > 0) {
+	    Graphics g = this.getComponentGraphics(this.getGraphics());
+	    for (EnemyPlane enemyPlane : this.enemyPlanes) {
+		synchronized (this) {
+		    this.score += enemyPlane.getKilledScore();
+		}
+		switch (enemyPlane.getEnemyType()) {
+		case SMALL_ENEMY_PLANE:
+		    this.smallPlaneKilledSoundPlayer.play();
+		    break;
+		case BIG_ENEMY_PLANE:
+		    this.bigPlaneKilledSoundPlayer.play();
+		    break;
+		case BOSS_ENEMY_PLANE:
+		    this.bossPlaneKilledSoundPlayer.play();
+		    break;
+		}
+		enemyPlane.drawKilled(g);
+	    }
+	    synchronized (this.bullets) {
+		this.bullets.clear();
+	    }
+	    synchronized (this.enemyPlanes) {
+		this.enemyPlanes.clear();
+	    }
+	    this.popBomb = null;
+	    this.popDoubleLaser = null;
+
+	    this.myPlane.getHoldBombList().remove(0);
+
+	    this.repaint();
+	}
     }
 
     @Override
@@ -373,6 +581,34 @@ public class GamePlayingPanel extends JPanel implements MouseMotionListener, Bul
 
     public int getScore() {
 	return score;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+	if (this.myPlane.isAlive() && this.myPlane.getHoldBombCount() > 0) {
+	    useBombSoundPlayer.play();
+	    useBomb();
+	}
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+	// nothing to do
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+	// nothing to do
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+	// nothing to do
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+	// nothing to do
     }
 
 }

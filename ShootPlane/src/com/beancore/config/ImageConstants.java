@@ -71,6 +71,11 @@ public class ImageConstants {
     public final static int BOMB_WIDTH = 58;
     public final static int BOMB_HEIGHT = 106;
 
+    public final static int CAUGHT_BOMB_POS_X = 811;
+    public final static int CAUGHT_BOMB_POS_Y = 694;
+    public final static int CAUGHT_BOMB_WIDTH = 62;
+    public final static int CAUGHT_BOMB_HEIGHT = 52;
+
     public final static int SMALL_PLANE_FIGHTING_POS_X = 272;
     public final static int SMALL_PLANE_FIGHTING_POS_Y = 356;
     public final static int SMALL_PLANE_FIGHTING_WIDTH = 48;

@@ -3,11 +3,14 @@ package com.beancore.ui;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
@@ -21,8 +24,11 @@ import javax.swing.JPanel;
 
 import com.beancore.config.Config;
 import com.beancore.config.ImageConstants;
+import com.beancore.entity.Score;
+import com.beancore.util.FileUtil;
 import com.beancore.util.ImageLoader;
 import com.beancore.util.Images;
+import com.beancore.util.SoundPlayer;
 
 public class MainFrame extends JFrame implements ActionListener {
 
@@ -33,9 +39,16 @@ public class MainFrame extends JFrame implements ActionListener {
     private GamePlayingPanel gamePlayingPanel;
 
     private PopupMenuPanel popupMenuPanel;
+    private HelpDialog helpDialog;
+
+    private SoundPlayer achievementSoundPlayer;
+
+    private List<Score> scoreList;
 
     public MainFrame() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
+	this.scoreList = new ArrayList<Score>();
 	this.loadImage();
+	this.initSoundPlayer();
 	this.initComponents();
 	this.setBackgroundImage();
     }
@@ -72,8 +85,9 @@ public class MainFrame extends JFrame implements ActionListener {
 		ImageConstants.BLUE_BULLET_POS_Y, ImageConstants.BLUE_BULLET_WIDTH, ImageConstants.BLUE_BULLET_HEIGHT);
 	Images.MY_PLANE_IMG = this.imgLoader.getImage(ImageConstants.MY_PLANE_POS_X, ImageConstants.MY_PLANE_POS_Y,
 		ImageConstants.MY_PLANE_WIDTH, ImageConstants.MY_PLANE_HEIGHT);
-	Images.MY_PLANE_FLYING_IMG = this.imgLoader.getImage(ImageConstants.MY_PLANE_FLYING_POS_X, ImageConstants.MY_PLANE_FLYING_POS_Y,
-		ImageConstants.MY_PLANE_FLYING_WIDTH, ImageConstants.MY_PLANE_FLYING_HEIGHT);
+	Images.MY_PLANE_FLYING_IMG = this.imgLoader.getImage(ImageConstants.MY_PLANE_FLYING_POS_X,
+		ImageConstants.MY_PLANE_FLYING_POS_Y, ImageConstants.MY_PLANE_FLYING_WIDTH,
+		ImageConstants.MY_PLANE_FLYING_HEIGHT);
 	Images.SMALL_PLANE_IMG = this.imgLoader.getImage(ImageConstants.SMALL_PLANE_POS_X,
 		ImageConstants.SMALL_PLANE_POS_Y, ImageConstants.SMALL_PLANE_WIDTH, ImageConstants.SMALL_PLANE_HEIGHT);
 	Images.BIG_PLANE_IMG = this.imgLoader.getImage(ImageConstants.BIG_PLANE_POS_X, ImageConstants.BIG_PLANE_POS_Y,
@@ -82,6 +96,11 @@ public class MainFrame extends JFrame implements ActionListener {
 		ImageConstants.BOSS_PLANE_POS_Y, ImageConstants.BOSS_PLANE_WIDTH, ImageConstants.BOSS_PLANE_HEIGHT);
 	Images.BOMB_IMG = this.imgLoader.getImage(ImageConstants.BOMB_POS_X, ImageConstants.BOMB_POS_Y,
 		ImageConstants.BOMB_WIDTH, ImageConstants.BOMB_HEIGHT);
+	Images.CAUGHT_BOMB_IMG = this.imgLoader.getImage(ImageConstants.CAUGHT_BOMB_POS_X,
+		ImageConstants.CAUGHT_BOMB_POS_Y, ImageConstants.CAUGHT_BOMB_WIDTH, ImageConstants.CAUGHT_BOMB_HEIGHT);
+	Images.DOUBLE_LASER_IMG = this.imgLoader.getImage(ImageConstants.DOUBLE_LASER_POS_X,
+		ImageConstants.DOUBLE_LASER_POS_Y, ImageConstants.DOUBLE_LASER_WIDTH,
+		ImageConstants.DOUBLE_LASER_HEIGHT);
 
 	Images.SMALL_PLANE_FIGHTING_IMG = this.imgLoader.getImage(ImageConstants.SMALL_PLANE_FIGHTING_POS_X,
 		ImageConstants.SMALL_PLANE_FIGHTING_POS_Y, ImageConstants.SMALL_PLANE_FIGHTING_WIDTH,
@@ -166,6 +185,10 @@ public class MainFrame extends JFrame implements ActionListener {
 	this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
+    private void initSoundPlayer() throws LineUnavailableException, UnsupportedAudioFileException, IOException {
+	achievementSoundPlayer = new SoundPlayer(Config.ACHIEVEMENT_AUDIO);
+    }
+
     private void setBackgroundImage() {
 	ImageIcon bgImgIcon = new ImageIcon(Images.SHOOT_BACKGROUND_IMG);
 	JLabel bgLabel = new JLabel(bgImgIcon);
@@ -216,13 +239,17 @@ public class MainFrame extends JFrame implements ActionListener {
 	this.gamePlayingPanel = new GamePlayingPanel();
 	c.add(this.gamePlayingPanel, BorderLayout.CENTER);
 	this.gamePlayingPanel.startGame();
+	long startTime = System.currentTimeMillis();
 	while (this.gamePlayingPanel.getMyPlane().isAlive()) {
 	    try {
-		Thread.sleep(Config.MAIN_FRAME_REPAINT_INTERVAL);
+		Thread.sleep(Config.GAME_PANEL_REPAINT_INTERVAL);
 	    } catch (InterruptedException e) {
 		e.printStackTrace();
 	    }
 	}
+	long endTime = System.currentTimeMillis();
+	// add to score list
+	this.addScore(this.gamePlayingPanel.getScore(), endTime - startTime);
 	int option = JOptionPane.showConfirmDialog(this, "Game Over, Score:" + this.gamePlayingPanel.getScore()
 		+ ", Start Again?", "Game Over", JOptionPane.YES_NO_OPTION);
 	switch (option) {
@@ -235,6 +262,22 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
     }
 
+    private void addScore(int score, long lastMilliSeconds) throws IOException {
+	Score s = new Score(new Date(System.currentTimeMillis()), score, lastMilliSeconds);
+	int size = this.scoreList.size();
+	if (size < Config.MAX_SCORE_COUNT) {
+	    this.scoreList.add(s);
+	} else {
+	    Score lastScore = this.scoreList.get(size - 1);
+	    if (s.compareTo(lastScore) > 0) {
+		this.scoreList.remove(lastScore);
+		this.scoreList.add(s);
+	    }
+	}
+	Collections.sort(this.scoreList);
+	FileUtil.writeScore(scoreList, Config.SCORE_FILE);
+    }
+
     public void stopGame() {
 	popupMenuPanel();
     }
@@ -244,6 +287,8 @@ public class MainFrame extends JFrame implements ActionListener {
 	String actionCmd = e.getActionCommand();
 	if (actionCmd.equals(PopupMenuPanel.START_GAME_BUTTON)) {
 	    startGameAction();
+	} else if (actionCmd.equals(PopupMenuPanel.TOP_10_SCORES_BUTTON)) {
+	    this.achievementSoundPlayer.play();
 	} else if (actionCmd.equals(PopupMenuPanel.EXIT_GAME_BUTTON)) {
 	    exitGameAction();
 	} else if (actionCmd.equals(PopupMenuPanel.SET_PARAM_BUTTON)) {
@@ -279,6 +324,9 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     private void helpAction() {
-	// popup help text
+	if (this.helpDialog == null) {
+	    this.helpDialog = new HelpDialog();
+	}
+	this.helpDialog.setVisible(true);
     }
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.util.LinkedList;
 import java.util.List;
 
 import com.beancore.config.BulletType;
@@ -24,18 +25,23 @@ public class MyPlane {
     private int width;
     private int height;
     private Image planeImage;
+    private Image planeFlyingImage;
     private boolean isAlive;
     private boolean hitDoubleLaser;
     private List<Bomb> holdBombList;
     private BulletType bulletType;
     private GamePlayingPanel playingPanel;
+    private boolean flip;
 
     public MyPlane(GamePlayingPanel playingPanel) {
 	this.isAlive = true;
+	this.flip = true;
 	this.playingPanel = playingPanel;
 	this.width = ImageConstants.MY_PLANE_WIDTH;
 	this.height = ImageConstants.MY_PLANE_HEIGHT;
 	this.planeImage = Images.MY_PLANE_IMG;
+	this.planeFlyingImage = Images.MY_PLANE_FLYING_IMG;
+	this.holdBombList = new LinkedList<Bomb>();
 	new Thread(new LauchBulletThread()).start();
     }
 
@@ -46,16 +52,19 @@ public class MyPlane {
 
     public void draw(Graphics g) {
 	Graphics2D g2d = (Graphics2D) g;
-	g2d.drawImage(planeImage, posX, posY, width, height, playingPanel);
+	if (flip) {
+	    g2d.drawImage(planeImage, posX, posY, width, height, playingPanel);
+	} else {
+	    g2d.drawImage(planeFlyingImage, posX, posY, width, height, playingPanel);
+	}
+	flip = !flip;
     }
-
+    
     public void mouseMoved(MouseEvent e) {
 	int x = e.getX();
 	int y = e.getY();
 	posX = x - width / 2;
 	posY = y - height / 2;
-	this.catchBomb();
-	this.catchDoubleLaser();
     }
 
     public void lauchBullet() {
@@ -91,12 +100,8 @@ public class MyPlane {
 	}
     }
 
-    public void catchBomb() {
-
-    }
-
-    public void catchDoubleLaser() {
-
+    public int getHoldBombCount() {
+	return this.holdBombList.size();
     }
 
     public int getPosX() {
@@ -178,5 +183,4 @@ public class MyPlane {
     public void setPlayingPanel(GamePlayingPanel playingPanel) {
 	this.playingPanel = playingPanel;
     }
-
 }

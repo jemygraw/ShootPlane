@@ -1,11 +1,12 @@
 package com.beancore.entity;
 
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Rectangle;
 
 import com.beancore.config.CatchableWeaponType;
-import com.beancore.ui.MainFrame;
+import com.beancore.ui.GamePlayingPanel;
 
 public abstract class CatchableWeapon {
     private int posX;
@@ -15,21 +16,28 @@ public abstract class CatchableWeapon {
     private int height;
     private Image weaponImage;
 
-    private MainFrame mainFrame;
+    private GamePlayingPanel gamePlayingPanel;
     private CatchableWeaponType weaponType;
+    private boolean useAnimation;
+    private boolean useAnimationDone;
+    private int speed;
+    private boolean weaponDisappear;
 
-    public CatchableWeapon(MainFrame mainFrame, CatchableWeaponType weaponType) {
-	this.mainFrame = mainFrame;
+    public CatchableWeapon(GamePlayingPanel gamePlayingPanel, CatchableWeaponType weaponType) {
+	this.gamePlayingPanel = gamePlayingPanel;
 	this.weaponType = weaponType;
+	this.useAnimation = false;
+	this.useAnimationDone = false;
+	this.weaponDisappear=false;
     }
 
     public Rectangle getRectangle() {
 	return new Rectangle(posX, posY, width, height);
     }
 
-    public void draw() {
-	Graphics2D g2d = (Graphics2D) mainFrame.getGraphics();
-	g2d.drawImage(weaponImage, posX, posY, width, height, mainFrame);
+    public void draw(Graphics g) {
+	Graphics2D g2d = (Graphics2D) g;
+	g2d.drawImage(weaponImage, posX, posY, width, height, gamePlayingPanel);
     }
 
     public int getPosX() {
@@ -72,12 +80,12 @@ public abstract class CatchableWeapon {
 	this.weaponImage = weaponImage;
     }
 
-    public MainFrame getMainFrame() {
-	return mainFrame;
+    public GamePlayingPanel getGamePlayingPanel() {
+	return gamePlayingPanel;
     }
 
-    public void setMainFrame(MainFrame mainFrame) {
-	this.mainFrame = mainFrame;
+    public void setGamePlayingPanel(GamePlayingPanel gamePlayingPanel) {
+	this.gamePlayingPanel = gamePlayingPanel;
     }
 
     public CatchableWeaponType getWeaponType() {
@@ -86,6 +94,38 @@ public abstract class CatchableWeapon {
 
     public void setWeaponType(CatchableWeaponType weaponType) {
 	this.weaponType = weaponType;
+    }
+
+    public int getSpeed() {
+	return speed;
+    }
+
+    public void setSpeed(int speed) {
+	this.speed = speed;
+    }
+
+    public boolean isUseAnimation() {
+	return useAnimation;
+    }
+
+    public void setUseAnimation(boolean useAnimation) {
+	this.useAnimation = useAnimation;
+    }
+
+    public boolean isUseAnimationDone() {
+	return useAnimationDone;
+    }
+
+    public void setUseAnimationDone(boolean useAnimationDone) {
+	this.useAnimationDone = useAnimationDone;
+    }
+
+    public boolean isWeaponDisappear() {
+	return weaponDisappear;
+    }
+
+    public void setWeaponDisappear(boolean weaponDisappear) {
+	this.weaponDisappear = weaponDisappear;
     }
 
 }
