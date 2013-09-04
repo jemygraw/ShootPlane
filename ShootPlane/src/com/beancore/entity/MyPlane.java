@@ -59,7 +59,7 @@ public class MyPlane {
 	}
 	flip = !flip;
     }
-    
+
     public void mouseMoved(MouseEvent e) {
 	int x = e.getX();
 	int y = e.getY();

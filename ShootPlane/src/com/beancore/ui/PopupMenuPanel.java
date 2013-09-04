@@ -16,64 +16,53 @@ public class PopupMenuPanel extends JPanel {
     private JLabel logoLabel;
     private GameButton startGameButton;
     private GameButton exitGameButton;
-    private GameButton setParamButton;
     private GameButton top10ScoresButton;
     private GameButton helpButton;
 
     public final static String START_GAME_BUTTON = "START_GAME_BUTTON";
     public final static String EXIT_GAME_BUTTON = "EXIT_GAME_BUTTON";
-    public final static String SET_PARAM_BUTTON = "SET_PARAM_BUTTON";
     public final static String TOP_10_SCORES_BUTTON = "TOP_10_SCORES_BUTTON";
     public final static String HELP_BUTTON = "HELP_BUTTON";
 
-    private MainFrame mainFrame;
-
     public PopupMenuPanel(MainFrame mainFrame) {
-	this.mainFrame = mainFrame;
-	this.initComponents();
+	this.initComponents(mainFrame);
     }
 
-    private void initComponents() {
+    private void initComponents(MainFrame mainFrame) {
 	this.logoLabel = new JLabel();
 	this.logoLabel.setIcon(new ImageIcon(Images.MY_PLANE_IMG));
 
 	this.startGameButton = new GameButton("New Game");
-	this.startGameButton.addActionListener(this.mainFrame);
+	this.startGameButton.addActionListener(mainFrame);
 	this.startGameButton.setActionCommand(START_GAME_BUTTON);
 	this.startGameButton.setOpaque(false);
 
-	this.exitGameButton = new GameButton("Exit Game");
-	this.exitGameButton.addActionListener(this.mainFrame);
-	this.exitGameButton.setActionCommand(EXIT_GAME_BUTTON);
-	this.exitGameButton.setOpaque(false);
-
-	this.setParamButton = new GameButton("Set Parameters");
-	this.setParamButton.addActionListener(this.mainFrame);
-	this.setParamButton.setActionCommand(SET_PARAM_BUTTON);
-	this.setParamButton.setOpaque(false);
+	this.top10ScoresButton = new GameButton("Top 10 Scores");
+	this.top10ScoresButton.addActionListener(mainFrame);
+	this.top10ScoresButton.setActionCommand(TOP_10_SCORES_BUTTON);
+	this.top10ScoresButton.setOpaque(false);
 
 	this.helpButton = new GameButton("Help");
-	this.helpButton.addActionListener(this.mainFrame);
+	this.helpButton.addActionListener(mainFrame);
 	this.helpButton.setActionCommand(HELP_BUTTON);
 	this.helpButton.setOpaque(false);
 
-	this.top10ScoresButton = new GameButton("Top 10 Scores");
-	this.top10ScoresButton.addActionListener(this.mainFrame);
-	this.top10ScoresButton.setActionCommand(TOP_10_SCORES_BUTTON);
-	this.top10ScoresButton.setOpaque(false);
+	this.exitGameButton = new GameButton("Exit Game");
+	this.exitGameButton.addActionListener(mainFrame);
+	this.exitGameButton.setActionCommand(EXIT_GAME_BUTTON);
+	this.exitGameButton.setOpaque(false);
 
 	JPanel logoPanel = new JPanel();
 	logoPanel.setOpaque(false);
 	logoPanel.add(logoLabel);
 
-	GridLayout gridLayout = new GridLayout(5, 1, 0, 10);
+	GridLayout gridLayout = new GridLayout(4, 1, 0, 10);
 	JPanel buttonPanel = new JPanel();
 	buttonPanel.setOpaque(false);
 	buttonPanel.setLayout(gridLayout);
 
 	buttonPanel.add(startGameButton);
 	buttonPanel.add(top10ScoresButton);
-	buttonPanel.add(setParamButton);
 	buttonPanel.add(helpButton);
 	buttonPanel.add(exitGameButton);
 

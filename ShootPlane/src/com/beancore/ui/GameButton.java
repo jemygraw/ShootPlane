@@ -26,9 +26,24 @@ public class GameButton extends JButton implements ImageObserver, MouseListener 
     private String buttonStatus;
     private SoundPlayer buttonSoundPlayer;
 
+    public GameButton() {
+	super();
+	this.text = "";
+	initButton();
+    }
+
     public GameButton(String text) {
 	super();
 	this.text = text;
+	initButton();
+    }
+
+    @Override
+    public void setText(String text) {
+	this.text = text;
+    }
+
+    private void initButton() {
 	this.buttonStatus = BUTTON_NORMAL;
 	this.setBorderPainted(false);
 	this.setFocusPainted(false);

@@ -36,7 +36,10 @@ public class Config {
     public final static int MAIN_FRAME_HEIGHT = 852;
 
     public final static int POP_UP_MENU_PANEL_WIDTH = 160;
-    public final static int POP_UP_MENU_PANEL_HEIGHT = 265;
+    public final static int POP_UP_MENU_PANEL_HEIGHT = 248;
+
+    public final static int POP_UP_SCORE_PANEL_WIDTH = 160;
+    public final static int POP_UP_SCORE_PANEL_HEIGHT = 634;
 
     public final static int HELP_DIALOG_WIDTH = 800;
     public final static int HELP_DIALOG_HEIGHT = 600;

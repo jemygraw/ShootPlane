@@ -39,6 +39,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private GamePlayingPanel gamePlayingPanel;
 
     private PopupMenuPanel popupMenuPanel;
+    private Top10ScorePanel popupScorePanel;
     private HelpDialog helpDialog;
 
     private SoundPlayer achievementSoundPlayer;
@@ -46,7 +47,11 @@ public class MainFrame extends JFrame implements ActionListener {
     private List<Score> scoreList;
 
     public MainFrame() throws IOException, LineUnavailableException, UnsupportedAudioFileException {
-	this.scoreList = new ArrayList<Score>();
+	try {
+	    this.scoreList = FileUtil.readScore(Config.SCORE_FILE);
+	} catch (Exception e) {
+	    this.scoreList = new ArrayList<Score>();
+	}
 	this.loadImage();
 	this.initSoundPlayer();
 	this.initComponents();
@@ -265,6 +270,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private void addScore(int score, long lastMilliSeconds) throws IOException {
 	Score s = new Score(new Date(System.currentTimeMillis()), score, lastMilliSeconds);
 	int size = this.scoreList.size();
+	if (this.scoreList.contains(s)) {
+	    return;
+	}
 	if (size < Config.MAX_SCORE_COUNT) {
 	    this.scoreList.add(s);
 	} else {
@@ -275,6 +283,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	    }
 	}
 	Collections.sort(this.scoreList);
+	Collections.reverse(this.scoreList);
 	FileUtil.writeScore(scoreList, Config.SCORE_FILE);
     }
 
@@ -289,13 +298,30 @@ public class MainFrame extends JFrame implements ActionListener {
 	    startGameAction();
 	} else if (actionCmd.equals(PopupMenuPanel.TOP_10_SCORES_BUTTON)) {
 	    this.achievementSoundPlayer.play();
+	    popupScorePanel(this.scoreList);
 	} else if (actionCmd.equals(PopupMenuPanel.EXIT_GAME_BUTTON)) {
 	    exitGameAction();
-	} else if (actionCmd.equals(PopupMenuPanel.SET_PARAM_BUTTON)) {
-	    setParamAction();
 	} else if (actionCmd.equals(PopupMenuPanel.HELP_BUTTON)) {
 	    helpAction();
+	} else if (actionCmd.equals(Top10ScorePanel.OK_BUTTON)) {
+	    this.popupMenuPanel();
 	}
+    }
+
+    public void popupScorePanel(List<Score> sortedScoreList) {
+	Container c = this.getContentPane();
+	c.removeAll();
+	this.repaint();
+	if (this.popupScorePanel == null) {
+	    this.popupScorePanel = new Top10ScorePanel(this);
+	}
+	this.popupScorePanel.loadScore(sortedScoreList);
+	BoxLayout boxLayout = new BoxLayout(c, BoxLayout.Y_AXIS);
+	c.setLayout(boxLayout);
+	c.add(Box.createVerticalGlue());
+	c.add(this.popupScorePanel);
+	c.add(Box.createVerticalGlue());
+	this.validate();
     }
 
     private void startGameAction() {
@@ -312,15 +338,10 @@ public class MainFrame extends JFrame implements ActionListener {
 		e.printStackTrace();
 	    }
 	}
-
     }
 
     private void exitGameAction() {
 	System.exit(0);
-    }
-
-    private void setParamAction() {
-	// set param
     }
 
     private void helpAction() {

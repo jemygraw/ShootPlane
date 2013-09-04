@@ -28,7 +28,7 @@ public abstract class CatchableWeapon {
 	this.weaponType = weaponType;
 	this.useAnimation = false;
 	this.useAnimationDone = false;
-	this.weaponDisappear=false;
+	this.weaponDisappear = false;
     }
 
     public Rectangle getRectangle() {
