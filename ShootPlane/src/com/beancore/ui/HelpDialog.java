@@ -25,7 +25,7 @@ public class HelpDialog extends JFrame {
     private void initComponent() {
 	this.helpContentTextPane = new JTextPane();
 	this.helpContentTextPane.setEditable(false);
-	this.helpContentTextPane.setContentType("text/html");
+	this.helpContentTextPane.setContentType("text/html;charset=utf-8");
 	try {
 	    this.helpContentTextPane.setText(FileUtil.readFileToString(Config.HELP_FILE_PATH));
 	} catch (IOException e) {
