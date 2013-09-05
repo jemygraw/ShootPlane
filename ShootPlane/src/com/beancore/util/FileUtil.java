@@ -21,7 +21,7 @@ public class FileUtil {
 	BufferedReader br = new BufferedReader(new FileReader(file));
 	String line = null;
 	while ((line = br.readLine()) != null) {
-	    sb.append(line).append("\r\n");
+	    sb.append(new String(line.getBytes(),"utf-8")).append("\r\n");
 	}
 	br.close();
 	return sb.toString();
