@@ -58,9 +58,9 @@ public class Config {
     public final static int BULLET_COUNT_TO_KILL_BIG_PLANE = 10;
     public final static int BULLET_COUNT_TO_KILL_BOSS_PLANE = 20;
 
-    public final static int SMALL_PLANE_STATUS_CHANGE_INTERVAL = 240;
-    public final static int BIG_PLANE_STATUS_CHANGE_INTERVAL = 240;
-    public final static int BOSS_PLANE_STATUS_CHANGE_INTERVAL = 240;
+    public final static int SMALL_PLANE_STATUS_CHANGE_INTERVAL = 90;
+    public final static int BIG_PLANE_STATUS_CHANGE_INTERVAL = 90;
+    public final static int BOSS_PLANE_STATUS_CHANGE_INTERVAL = 170;
 
     public final static int GAME_LOADING_INTERVAL = 600;
     public final static int MAX_SCORE_COUNT = 10;
@@ -82,7 +82,7 @@ public class Config {
     public final static int THREE_BOMB = 3;
 
     // changeable configuration
-    public static int DOUBLE_LASER_LAST_TIME = 28000;// 30 seconds
+    public static int DOUBLE_LASER_LAST_TIME = 28000;// 28 seconds
 
     public static int BULLET_FIRE_INTERVAL = 120;
 
@@ -95,15 +95,15 @@ public class Config {
     public static int ENEMY_PLANE_MOVE_SPEED_MAX = 40;
 
     public static int POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED = 60;
-    public static int POP_WEAPON_ANIMATION_MOV_BACK_SPEED = 20;
+    public static int POP_WEAPON_ANIMATION_MOV_BACK_SPEED = 200;
 
     public static int POP_WEAPON_MOVE_SPEED = 30;
 
     public static int POP_DOUBLE_LASER_INTERVAL = 30000;
-    public static int POP_BOMBO_INTERVAL = 60000;
+    public static int POP_BOMBO_INTERVAL = 58000;
 
-    public static int POP_SMALL_ENEMY_PLANE_INTERVAL = 500;
-    public static int POP_BIG_ENEMY_PLANE_INTERVAL = 5000;
-    public static int POP_BOSS_ENEMY_PLANE_INTERVAL = 10000;
+    public static int POP_SMALL_ENEMY_PLANE_INTERVAL = 300;
+    public static int POP_BIG_ENEMY_PLANE_INTERVAL = 6000;
+    public static int POP_BOSS_ENEMY_PLANE_INTERVAL = 12000;
 
 }

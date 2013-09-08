@@ -175,67 +175,74 @@ public class GamePlayingPanel extends JPanel implements MouseListener, MouseMoti
     @Override
     public void onCatchableWeaponLocationChanged(CatchableWeapon weapon) {
 	if (weapon != null) {
-	    int posY = weapon.getPosY();
-	    if (weapon.isUseAnimation()) {
-		switch (weapon.getWeaponType()) {
-		case BOMB:
-		    if (this.bombAnomationStep == ANIMATION_STEP_1) {
-			posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
-			this.bombAnomationStep++;
-		    } else if (this.bombAnomationStep == ANIMATION_STEP_2) {
-			posY -= Config.POP_WEAPON_ANIMATION_MOV_BACK_SPEED;
-			this.bombAnomationStep = 0;
-			weapon.setUseAnimation(false);
-			weapon.setUseAnimationDone(true);
-		    }
-		    break;
-		case DOUBLE_LASER:
-		    if (this.doubleLaserAnimationStep == ANIMATION_STEP_1) {
-			posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
-			this.doubleLaserAnimationStep++;
-		    } else if (this.doubleLaserAnimationStep == ANIMATION_STEP_2) {
-			posY -= Config.POP_WEAPON_ANIMATION_MOV_BACK_SPEED;
-			this.doubleLaserAnimationStep = 0;
-			weapon.setUseAnimation(false);
-			weapon.setUseAnimationDone(true);
-		    }
-		    break;
-		}
-	    } else {
-		posY += weapon.getSpeed();
-	    }
-
-	    weapon.setPosY(posY);
-
-	    if (!weapon.isUseAnimationDone() && weapon.getPosY() >= this.getHeight() / 2) {
-		weapon.setUseAnimation(true);
-		switch (weapon.getWeaponType()) {
-		case BOMB:
-		    this.bombAnomationStep = ANIMATION_STEP_1;
-		    break;
-		case DOUBLE_LASER:
-		    this.doubleLaserAnimationStep = ANIMATION_STEP_1;
-		    break;
-		}
-	    }
-
-	    if (weapon.getPosY() >= this.getHeight()) {
-		weapon.setWeaponDisappear(true);
-	    } else {
-		if (weapon.getRectangle().intersects(myPlane.getRectange())) {
+	    synchronized (weapon) {
+		int posY = weapon.getPosY();
+		if (weapon.isUseAnimation()) {
 		    switch (weapon.getWeaponType()) {
 		    case BOMB:
-			if (myPlane.getHoldBombCount() < Config.BOMB_MAX_HOLD_COUNT) {
-			    myPlane.getHoldBombList().add((Bomb) weapon);
-			    this.getBombSoundPlayer.play();
+			if (this.bombAnomationStep == ANIMATION_STEP_1) {
+			    posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
+			    this.bombAnomationStep++;
+			} else if (this.bombAnomationStep == ANIMATION_STEP_2) {
+			    posY -= Config.POP_WEAPON_ANIMATION_MOV_BACK_SPEED;
+			    this.bombAnomationStep = 0;
+			    weapon.setUseAnimation(false);
+			    weapon.setUseAnimationDone(true);
 			}
 			break;
 		    case DOUBLE_LASER:
-			myPlane.setHitDoubleLaser(true);
-			this.getDoubleLaserSoundPlayer.play();
+			System.err.println("DL:" + this.doubleLaserAnimationStep);
+			if (this.doubleLaserAnimationStep == ANIMATION_STEP_1) {
+			    posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
+			    this.doubleLaserAnimationStep++;
+			} else if (this.doubleLaserAnimationStep == ANIMATION_STEP_2) {
+			    posY -= Config.POP_WEAPON_ANIMATION_MOV_BACK_SPEED;
+			    this.doubleLaserAnimationStep = 0;
+			    weapon.setUseAnimation(false);
+			    weapon.setUseAnimationDone(true);
+			}
 			break;
 		    }
+		} else {
+		    posY += weapon.getSpeed();
+		}
+
+		weapon.setPosY(posY);
+
+		if (!weapon.isUseAnimationDone() && weapon.getPosY() >= this.getHeight() / 5) {
+		    weapon.setUseAnimation(true);
+		    switch (weapon.getWeaponType()) {
+		    case BOMB:
+			if (this.bombAnomationStep == 0) {
+			    this.bombAnomationStep++;
+			}
+			break;
+		    case DOUBLE_LASER:
+			if (this.doubleLaserAnimationStep == 0) {
+			    this.doubleLaserAnimationStep++;
+			}
+			break;
+		    }
+		}
+
+		if (weapon.getPosY() >= this.getHeight()) {
 		    weapon.setWeaponDisappear(true);
+		} else {
+		    if (weapon.getRectangle().intersects(myPlane.getRectange())) {
+			switch (weapon.getWeaponType()) {
+			case BOMB:
+			    if (myPlane.getHoldBombCount() < Config.BOMB_MAX_HOLD_COUNT) {
+				myPlane.getHoldBombList().add((Bomb) weapon);
+				this.getBombSoundPlayer.play();
+			    }
+			    break;
+			case DOUBLE_LASER:
+			    myPlane.setHitDoubleLaser(true);
+			    this.getDoubleLaserSoundPlayer.play();
+			    break;
+			}
+			weapon.setWeaponDisappear(true);
+		    }
 		}
 	    }
 	}

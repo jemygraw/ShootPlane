@@ -308,7 +308,7 @@ public class MainFrame extends JFrame implements ActionListener {
 	}
     }
 
-    public void popupScorePanel(List<Score> sortedScoreList) {
+    private void popupScorePanel(List<Score> sortedScoreList) {
 	Container c = this.getContentPane();
 	c.removeAll();
 	this.repaint();
