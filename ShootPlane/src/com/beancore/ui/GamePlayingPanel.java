@@ -191,7 +191,6 @@ public class GamePlayingPanel extends JPanel implements MouseListener, MouseMoti
 			}
 			break;
 		    case DOUBLE_LASER:
-			System.err.println("DL:" + this.doubleLaserAnimationStep);
 			if (this.doubleLaserAnimationStep == ANIMATION_STEP_1) {
 			    posY += Config.POP_WEAPON_ANIMATION_MOVE_FORWARD_SPEED;
 			    this.doubleLaserAnimationStep++;
