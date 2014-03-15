@@ -30,3 +30,6 @@ ShootPlane - 仿微信打飞机游戏的java实现
 
 ##支持我，可以为我付点小费！https://me.alipay.com/jemygraw
 
+##效果图
+![首页](shootplane_1.png)
+![运行](shootplane_2.png)
