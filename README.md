@@ -33,6 +33,6 @@ ShootPlane - 仿微信打飞机游戏的java实现
 ![首页](shootplane_1.png)
 ![运行](shootplane_2.png)
 
-##赞赏
+## 赞赏
 
 ![赞赏](zhifubao.jpg)
